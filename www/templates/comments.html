@@ -1,0 +1,17 @@
+<ion-view title="Your story" ng-init="">
+    <ion-content>
+        <div>
+            <div class="list list-inset">
+                <label class="item item-input">
+                    <textarea ng-model="comment" type="text" placeholder="Enter your story"></textarea>
+                </label>
+            </div>
+            <div class="padding-left padding-right">
+                <div class="button-bar">
+                    <a class="button" ng-click="post(comment)">Share</a>
+                    <a class="button" ng-click="clear()">Clear</a>
+                </div>
+            </div>
+        </div>
+    </ion-content>
+</ion-view>
