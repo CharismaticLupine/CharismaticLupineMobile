@@ -1,4 +1,4 @@
-angular.module('starter.services', [])
+angular.module('starter.services', ['ngResource'])
   .factory('Auth', function ($http, $location, $window) {
     // Don't touch this Auth service!!!
     // it is responsible for authenticating our user
@@ -46,4 +46,39 @@ angular.module('starter.services', [])
       isAuth: isAuth,
       signout: signout
     };
-  });
+  })
+  .factory('Camera', ['$cordovaCamera', function($cordovaCamera) {
+
+    return {
+      getPicture: function(options) {
+        return $cordovaCamera.getPicture(options);
+      }
+    };
+  }])
+  .factory('GPS', ['$q', function($q) {
+    return {
+      getGeo: function(options) {
+        options = options || { timeout: 30000, enableHighAccuracy: true };
+        var q = $q.defer();
+        navigator.geolocation.getCurrentPosition(function(position) {
+          q.resolve(position);
+        }, function(err) {
+          q.reject(err);
+        }, options);
+        return q.promise;
+      }
+    }
+  }])
+  .factory('API', ['$q', '$resource', function($q, $resource) {
+    return {
+      Photo: {
+        post: $resource('http://10.0.3.2:8000/photo/'),
+        get: $resource('http://10.0.3.2:8000/photo/:id', {id:'@id'})
+      },
+      Physical: {
+        get: $resource('http://10.0.3.2:8000/physical/:location', {location:'@location'}),
+        getAll: $resource('http://10.0.3.2:8000/physical/'),
+        post: $resource('http://10.0.3.2:8000/physical/')
+      }
+    }
+  }]);

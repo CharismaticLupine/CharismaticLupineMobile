@@ -1,8 +1,5 @@
 // Ionic Starter App
 
-// angular.module is a global place for creating, registering and retrieving Angular modules
-// 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
-// the 2nd parameter is an array of 'requires'
 angular.module('starter', ['ionic', "ngCordova", 'starter.controllers', 'starter.services'])
 
 .run(function($rootScope, $location, Auth, $ionicPlatform) {
@@ -23,7 +20,7 @@ angular.module('starter', ['ionic', "ngCordova", 'starter.controllers', 'starter
   });
 })
 
-.config(function($stateProvider, $urlRouterProvider) {
+.config(function($stateProvider, $urlRouterProvider, $compileProvider) {
   $stateProvider
     .state("login", {
       url: "/login",
@@ -47,6 +44,7 @@ angular.module('starter', ['ionic', "ngCordova", 'starter.controllers', 'starter
       controller: "ChoicesController"
     });
   $urlRouterProvider.otherwise('/login');
+  $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|ftp|file|blob):|data:image\//);
 })
 .factory('AttachTokens', function ($window) {
   // this is an $httpInterceptor

@@ -32,25 +32,15 @@ angular.module('starter.controllers', [])
   }
 
 })
-.controller("PhotosController", function($scope, $state, $ionicHistory, $cordovaCamera, $cordovaGeolocation) {
+.controller("PhotosController", ['$scope', '$state', '$ionicHistory', 'Camera', function($scope, $state, $ionicHistory, Camera) {
 
   $ionicHistory.clearHistory();
 
   $scope.images = [];
 
   $scope.upload = function() {
-    var options = {
-      quality : 75,
-      destinationType : Camera.DestinationType.DATA_URL,
-      sourceType : Camera.PictureSourceType.CAMERA,
-      allowEdit : true,
-      encodingType: Camera.EncodingType.JPEG,
-      popoverOptions: CameraPopoverOptions,
-      targetWidth: 500,
-      targetHeight: 500,
-      saveToPhotoAlbum: false
-    };
-    $cordovaCamera.getPicture(options).then(function(data) {
+    Camera.getPicture().then(function(data) {
+      console.log(data);
       $state.go('comments');
     }, function(error) {
       console.error(error);
@@ -66,7 +56,7 @@ angular.module('starter.controllers', [])
     });
   }
 
-})
+}])
 .controller("CommentsController", function($scope, $state, $ionicHistory) {
   $ionicHistory.clearHistory();
 
