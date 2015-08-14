@@ -51,21 +51,17 @@ angular.module('starter.services', ['ngResource'])
 
     return {
       getPicture: function(options) {
+        console.log('service');
         return $cordovaCamera.getPicture(options);
       }
     };
   }])
-  .factory('GPS', ['$q', function($q) {
+  .factory('GPS', ['$cordovaGeolocation', function($cordovaGeolocation) {
     return {
       getGeo: function(options) {
         options = options || { timeout: 30000, enableHighAccuracy: true };
-        var q = $q.defer();
-        navigator.geolocation.getCurrentPosition(function(position) {
-          q.resolve(position);
-        }, function(err) {
-          q.reject(err);
-        }, options);
-        return q.promise;
+
+        return $cordovaGeolocation.getCurrentPosition(options);
       }
     }
   }])

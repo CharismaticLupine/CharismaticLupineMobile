@@ -32,29 +32,77 @@ angular.module('starter.controllers', [])
   }
 
 })
-.controller("PhotosController", ['$scope', '$state', '$ionicHistory', 'Camera', function($scope, $state, $ionicHistory, Camera) {
+.controller("PhotosController", ['$scope', '$state', '$ionicHistory', 'Camera', 'GPS', 'API', '$http', '$resource', function($scope, $state, $ionicHistory, Camera, GPS, API, $http, $resource) {
 
   $ionicHistory.clearHistory();
 
   $scope.images = [];
 
-  $scope.upload = function() {
-    Camera.getPicture().then(function(data) {
-      console.log(data);
-      $state.go('comments');
+  $scope.takePhoto = function() {
+    var options = {
+      quality: 75,
+      targetWidth: 320,
+      targetHeight: 320,
+      saveToPhotoAlbum: false
+    };
+
+    Camera.getPicture(options).then(function(imageURI) {
+      console.log(imageURI);
+      $scope.lastPhoto = imageURI;
+      GPS.getGeo().then(function(position){
+        var longitude = position.coords.longitude;
+        var latitude = position.coords.latitude;
+        $scope.getPhysical(longitude, latitude).then(function(result){
+          if(result.features.length > 0){
+            //handle choice
+          }
+          else {
+            $scope.postPhysical(longitude, latitude).then(function(physical){
+              console.log(physical);
+              $scope.upload(imageURI, null, physical.id);
+              $state.go('comments');
+            });
+          }
+        }).catch(function(error){
+          console.error(error)
+        });
+
+      });
     }, function(error) {
       console.error(error);
     });
   };
 
-  $scope.geo = function () {
-    var geoOptions = { timeout: 30000, enableHighAccuracy: true };
-    $cordovaGeolocation.getCurrentPosition(geoOptions).then(function(data) {
-      $state.go('choices');
-    }, function (error){
-      console.error(error);
-    });
-  }
+  $scope.upload = function(imageURI, userId, physicalId) {
+    userId = userId || 1;
+    physicalId = physicalId || 1;
+    var ft = new FileTransfer();
+    var options = new FileUploadOptions();
+    options.fileKey = "photo";
+    options.fileName = imageURI.substr(imageURI.lastIndexOf('/') + 1);
+    options.mimeType = "image/jpeg";
+    options.params = {user_id: userId, physical_id: physicalId};
+    options.chunkedMode = false;
+    ft.upload(imageURI, "http://10.0.3.2:8000/photo", function(r) {
+      console.log("Code = " + r.responseCode);
+      console.log("Response = " + r.response);
+      console.log("Sent = " + r.bytesSent);
+    }, function(error) {
+      alert("An error has occurred: Code = " + error.code);
+      console.log("upload error source " + error.source);
+      console.log("upload error target " + error.target);
+    }, options);
+  };
+
+  $scope.postPhysical = function(longitude, latitude) {
+    var physical = new API.Physical.post({geo: [longitude, latitude]}); // req.body
+    return physical.$save();
+  };
+
+  $scope.getPhysical = function(longitude, latitude) {
+    var physical = new API.Physical.get({geo: [longitude, latitude]}); // req.body
+    return physical.$get();
+  };
 
 }])
 .controller("CommentsController", function($scope, $state, $ionicHistory) {
