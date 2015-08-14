@@ -53,16 +53,15 @@ angular.module('starter.controllers', [])
         var longitude = position.coords.longitude;
         var latitude = position.coords.latitude;
         $scope.getPhysical(longitude, latitude).then(function(result){
-          if(result.features.length > 0){
+          //if(result.features.length > 0){
             //handle choice
-          }
-          else {
-            $scope.postPhysical(longitude, latitude).then(function(physical){
-              console.log(physical);
-              $scope.upload(imageURI, null, physical.id);
-              $state.go('comments');
-            });
-          }
+          //}
+          //else {
+            var physical = new API.Physical.post({geo: [longitude, latitude]}); // req.body
+            physical.$save();
+            $scope.upload(imageURI);
+            $state.go('comments', {'physicalId': 1});
+          //}
         }).catch(function(error){
           console.error(error)
         });
@@ -105,9 +104,9 @@ angular.module('starter.controllers', [])
   };
 
 }])
-.controller("CommentsController", function($scope, $state, $ionicHistory) {
+.controller("CommentsController", function($scope, $state, $stateParams, $ionicHistory) {
   $ionicHistory.clearHistory();
-
+  console.log($stateParams.physicalId);
   $scope.post = function(comment){
     console.log(comment);
     $state.go('photos');

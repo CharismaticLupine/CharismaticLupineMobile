@@ -34,7 +34,7 @@ angular.module('starter', ['ionic', "ngCordova", 'starter.controllers', 'starter
       controller: "PhotosController"
     })
     .state("comments", {
-      url: "/comments",
+      url: "/:physicalId/comments",
       templateUrl: "templates/comments.html",
       controller: "CommentsController"
     })
