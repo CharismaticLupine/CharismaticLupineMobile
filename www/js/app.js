@@ -20,7 +20,7 @@ angular.module('starter', ['ionic', "ngCordova", 'starter.controllers', 'starter
   });
 })
 
-.config(function($stateProvider, $urlRouterProvider, $compileProvider) {
+.config(function($stateProvider, $urlRouterProvider, $compileProvider, $httpProvider, $windowProvider) {
   $stateProvider
     .state("login", {
       url: "/login",
@@ -45,6 +45,15 @@ angular.module('starter', ['ionic', "ngCordova", 'starter.controllers', 'starter
     });
   $urlRouterProvider.otherwise('/login');
   $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|ftp|file|blob):|data:image\//);
+  $httpProvider.interceptors.push(function() {
+    return {
+      'request': function(config) {
+
+        config.headers['x-access-token'] = $windowProvider.$get().localStorage.getItem('com.shortly');
+        return config;
+      }
+    };
+  });
 })
 .factory('AttachTokens', function ($window) {
   // this is an $httpInterceptor

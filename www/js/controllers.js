@@ -32,7 +32,7 @@ angular.module('starter.controllers', [])
   }
 
 })
-.controller("PhotosController", ['$scope', '$state', '$ionicHistory', 'Camera', 'GPS', 'API', '$http', '$resource', function($scope, $state, $ionicHistory, Camera, GPS, API, $http, $resource) {
+.controller("PhotosController", ['$scope', '$state', '$ionicHistory', 'Camera', 'GPS', 'API', '$http', '$resource', '$window', function($scope, $state, $ionicHistory, Camera, GPS, API, $http, $resource, $window) {
 
   $ionicHistory.clearHistory();
 
@@ -47,7 +47,6 @@ angular.module('starter.controllers', [])
     };
 
     Camera.getPicture(options).then(function(imageURI) {
-      console.log(imageURI);
       $scope.lastPhoto = imageURI;
       GPS.getGeo().then(function(position){
         var longitude = position.coords.longitude;
@@ -72,16 +71,18 @@ angular.module('starter.controllers', [])
     });
   };
 
-  $scope.upload = function(imageURI, userId, physicalId) {
-    userId = userId || 1;
+  $scope.upload = function(imageURI, physicalId) {
     physicalId = physicalId || 1;
     var ft = new FileTransfer();
     var options = new FileUploadOptions();
     options.fileKey = "photo";
     options.fileName = imageURI.substr(imageURI.lastIndexOf('/') + 1);
     options.mimeType = "image/jpeg";
-    options.params = {user_id: userId, physical_id: physicalId};
+    options.params = {physical_id: physicalId};
     options.chunkedMode = false;
+    options.headers = {
+      'x-access-token': $window.localStorage.getItem('com.shortly')
+    };
     ft.upload(imageURI, "http://10.0.3.2:8000/photo", function(r) {
       console.log("Code = " + r.responseCode);
       console.log("Response = " + r.response);
@@ -104,11 +105,11 @@ angular.module('starter.controllers', [])
   };
 
 }])
-.controller("CommentsController", function($scope, $state, $stateParams, $ionicHistory) {
+.controller("CommentsController", function($scope, $state, $stateParams, $ionicHistory, API) {
   $ionicHistory.clearHistory();
-  console.log($stateParams.physicalId);
-  $scope.post = function(comment){
-    console.log(comment);
+  $scope.post = function(text){
+    var comment = new API.Comment.post({text: text, physical: $stateParams.physicalId}); // req.body
+    comment.$save();
     $state.go('photos');
   };
 

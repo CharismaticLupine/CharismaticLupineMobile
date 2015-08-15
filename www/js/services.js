@@ -51,7 +51,6 @@ angular.module('starter.services', ['ngResource'])
 
     return {
       getPicture: function(options) {
-        console.log('service');
         return $cordovaCamera.getPicture(options);
       }
     };
@@ -75,6 +74,9 @@ angular.module('starter.services', ['ngResource'])
         get: $resource('http://10.0.3.2:8000/physical/:location', {location:'@location'}),
         getAll: $resource('http://10.0.3.2:8000/physical/'),
         post: $resource('http://10.0.3.2:8000/physical/')
+      },
+      Comment: {
+        post: $resource('http://10.0.3.2:8000/comments/')
       }
     }
   }]);
