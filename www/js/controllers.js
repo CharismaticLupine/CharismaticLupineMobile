@@ -52,15 +52,15 @@ angular.module('starter.controllers', [])
         var longitude = position.coords.longitude;
         var latitude = position.coords.latitude;
         $scope.getPhysical(longitude, latitude).then(function(result){
-          //if(result.features.length > 0){
-            //handle choice
-          //}
-          //else {
+          if(result.features.length > 0){
+
+          }
+          else {
             var physical = new API.Physical.post({geo: [longitude, latitude]}); // req.body
             physical.$save();
             $scope.upload(imageURI);
             $state.go('comments', {'physicalId': 1});
-          //}
+          }
         }).catch(function(error){
           console.error(error)
         });
@@ -100,7 +100,7 @@ angular.module('starter.controllers', [])
   };
 
   $scope.getPhysical = function(longitude, latitude) {
-    var physical = new API.Physical.get({geo: [longitude, latitude]}); // req.body
+    var physical = new API.Physical.get({location: [longitude, latitude]}); // req.body
     return physical.$get();
   };
 
