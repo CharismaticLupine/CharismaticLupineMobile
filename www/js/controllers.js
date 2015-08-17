@@ -1,4 +1,7 @@
 angular.module('starter.controllers', [])
+.config(function($compileProvider){
+  $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|ftp|file|blob):|data:image\//);
+})
 .controller("LoginController", function($scope, $window, $state, Auth) {
 
   $scope.login = function(username, password) {
@@ -155,13 +158,14 @@ angular.module('starter.controllers', [])
     .then(function(val) {
       console.log(val);
       var firstPhoto = val.photos[0];
-      var photoData = firstPhoto.photo;
-      var photoPhysical = firstPhoto.physicalId;
+      // var photoData = firstPhoto.photo;
+      var photoData = firstPhoto.data;
+      var photoPhysicalID = 1;
       var arrayBufferView = new Uint8Array(photoData);
       var blob = new Blob( [ arrayBufferView ], { type: "image/jpeg" } );
       var urlCreator = window.URL || window.webkitURL;
       var imageUrl = urlCreator.createObjectURL( blob );
-      $scope.images.push({imageUrl: imageUrl, physical: photoPhysical});
+      $scope.images.push({imageUrl: imageUrl, physical: photoPhysicalID});
     }).catch(function(err){
       console.log(err);
     });
