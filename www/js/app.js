@@ -34,9 +34,14 @@ angular.module('starter', ['ionic', "ngCordova", 'starter.controllers', 'starter
       controller: "PhotosController"
     })
     .state("comments", {
-      url: "/:physicalId/comments",
+      url: "/:physicalId/comment",
       templateUrl: "templates/comments.html",
       controller: "CommentsController"
+    })
+    .state("commentsList", {
+      url: "/:physicalId/comments",
+      templateUrl: "templates/commentsList.html",
+      controller: "CommentsListController"
     })
     .state("choices", {
       url: "/choices",
@@ -48,7 +53,6 @@ angular.module('starter', ['ionic', "ngCordova", 'starter.controllers', 'starter
   $httpProvider.interceptors.push(function() {
     return {
       'request': function(config) {
-
         config.headers['x-access-token'] = $windowProvider.$get().localStorage.getItem('com.shortly');
         return config;
       }

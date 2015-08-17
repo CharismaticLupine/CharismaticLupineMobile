@@ -24,7 +24,7 @@ angular.module('starter.controllers', [])
     Auth.signup(user)
       .then(function (token) {
         $window.localStorage.setItem('com.shortly', token);
-        $state.go('photos')
+        $state.go('login')
       })
       .catch(function (error) {
         console.error(error);
@@ -110,12 +110,30 @@ angular.module('starter.controllers', [])
   $scope.post = function(text){
     var comment = new API.Comment.post({text: text, physical: $stateParams.physicalId}); // req.body
     comment.$save();
-    $state.go('photos');
+    $state.go('commentsList', {'physicalId': 1});
   };
 
   $scope.clear = function() {
 
   };
+
+
+})
+.controller("CommentsListController", function($scope, $state, $stateParams, $ionicHistory, API) {
+  $ionicHistory.clearHistory();
+  $scope.comments = [];
+  $scope.getComments = function(){
+    var comment = new API.Comment.get();
+    comment.$get({id: $stateParams.physicalId}).then(function(data){
+      $scope.comments = data.list;
+    });
+  };
+  $scope.newPhoto = function(){
+    $state.go('photos');
+  };
+
+  $scope.getComments();
+  console.log($scope.comments);
 
 
 })
