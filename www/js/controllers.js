@@ -60,7 +60,6 @@ angular.module('starter.controllers', [])
             Physical.setPhysicals(result.features);
             Physical.setPhotoURI(imageURI);
             Physical.setPhotoGeo(longitude, latitude);
-            console.log("setting new photoURI", Physical.data.photoURI);
             $state.go('choices');
           }
           else {
@@ -127,7 +126,6 @@ angular.module('starter.controllers', [])
       var photo = new API.Photo.getbyPhysical({id: $scope.physicals[i].properties.id});
       photo.$get()
       .then(function(val) {
-        console.log(val);
         var firstPhoto = val.photos[0];
         // var photoData = firstPhoto.photo;
         var photoData = firstPhoto.data;
@@ -138,14 +136,13 @@ angular.module('starter.controllers', [])
         var imageUrl = urlCreator.createObjectURL( blob );
         $scope.images.push({imageUrl: imageUrl, physical: photoPhysicalID});
       }).catch(function(err){
-        console.log(err);
+        console.error(err);
       });
     }
     $scope.lastImageURI = Physical.data.photoURI;
   };
 
   $scope.back = function() {
-    console.log('going back');
     $state.go('photos');
   };
 
