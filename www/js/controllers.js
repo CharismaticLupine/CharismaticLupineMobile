@@ -106,6 +106,9 @@ angular.module('starter.controllers', [])
 .controller("CommentsListController", function($scope, $state, $stateParams, $ionicHistory, API) {
   $ionicHistory.clearHistory();
   $scope.comments = [];
+  $scope.$on('$stateChangeStart', function() {
+    $scope.getComments();
+  });
   $scope.getComments = function(){
     var comment = new API.Comment.get();
     comment.$get({id: $stateParams.physicalId}).then(function(data){
@@ -119,6 +122,9 @@ angular.module('starter.controllers', [])
 .controller("ChoicesController", function($scope, $state, API, Physical, Camera, $ionicHistory) {
 
   $ionicHistory.clearHistory();
+  $scope.$on('$stateChangeStart', function() {
+    $scope.getPhoto();
+  });
   $scope.getPhoto = function() {
     $scope.images = [];
     $scope.physicals = Physical.data.physicals;
