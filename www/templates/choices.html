@@ -5,6 +5,9 @@
           <ion-item ng-repeat="image in images" on-tap="upload(image.physical)">
             <img ng-src="{{image.imageUrl}}" style="max-width: 100%">
           </ion-item>
+          <ion-item on-tap="newPhysical()">
+            <img ng-src="{{lastImageURI}}" style="max-width: 100%">
+          </ion-item>
         </ion-list>
     </ion-content>
 </ion-view>

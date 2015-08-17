@@ -59,6 +59,8 @@ angular.module('starter.controllers', [])
           if(result.features.length > 0){
             Physical.setPhysicals(result.features);
             Physical.setPhotoURI(imageURI);
+            Physical.setPhotoGeo(longitude, latitude);
+            console.log("setting new photoURI", Physical.data.photoURI);
             $state.go('choices');
           }
           else {
@@ -139,6 +141,7 @@ angular.module('starter.controllers', [])
         console.log(err);
       });
     }
+    $scope.lastImageURI = Physical.data.photoURI;
   };
 
   $scope.back = function() {
@@ -149,5 +152,17 @@ angular.module('starter.controllers', [])
   $scope.upload = function(physicalId) {
     Camera.upload(Physical.data.photoURI, physicalId);
     $state.go('comments', {'physicalId': physicalId});
+  };
+  $scope.newPhysical = function() {
+    var physical = new API.Physical.post({geo: [Physical.data.photoGeo.longitude, Physical.data.photoGeo.latitude]}); // req.body
+    physical.$save()
+    .then(function(value) {
+      var physicalId = value.features[0].properties.id;
+      $scope.upload(physicalId);
+      $state.go('comments', {'physicalId': physicalId});
+    })
+    .catch(function(err) {
+      // error handler;
+    })
   };
 });

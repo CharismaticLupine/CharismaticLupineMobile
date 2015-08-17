@@ -91,7 +91,11 @@ angular.module('starter.services', ['ngResource'])
   .factory('Physical',[function() {
     var data = {
       physicals: [],
-      photoURI: ""
+      photoURI: "",
+      photoGeo: {
+        latitude: "",
+        longitude: ""
+      }
     };
     var setPhysicals = function(physicals) {
       data.physicals = physicals;
@@ -99,10 +103,15 @@ angular.module('starter.services', ['ngResource'])
     var setPhotoURI = function(photoURI) {
       data.photoURI = photoURI;
     };
+    var setPhotoGeo = function(longitude, latitude) {
+      data.photoGeo.longitude = longitude;
+      data.photoGeo.latitude = latitude;
+    };
     return {
       data: data,
       setPhysicals: setPhysicals,
-      setPhotoURI: setPhotoURI
+      setPhotoURI: setPhotoURI,
+      setPhotoGeo: setPhotoGeo
     };
   }])
   .factory('API', ['$q', '$resource', function($q, $resource) {
