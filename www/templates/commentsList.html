@@ -1,0 +1,12 @@
+<ion-view title="Comments" ng-init="">
+    <ion-nav-buttons side="right">
+        <button class="button" ng-click="newPhoto()">New Photo</button>
+    </ion-nav-buttons>
+    <ion-content>
+        <ion-list>
+            <ion-item ng-repeat="comment in comments">
+                {{comment.text}}
+            </ion-item>
+        </ion-list>
+    </ion-content>
+</ion-view>

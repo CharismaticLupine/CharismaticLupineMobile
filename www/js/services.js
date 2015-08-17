@@ -76,7 +76,8 @@ angular.module('starter.services', ['ngResource'])
         post: $resource('http://10.0.3.2:8000/physical/')
       },
       Comment: {
-        post: $resource('http://10.0.3.2:8000/comments/')
+        post: $resource('http://10.0.3.2:8000/comments/'),
+        get: $resource('http://10.0.3.2:8000/comments/:id', {id: '@id'})
       }
     }
   }]);
