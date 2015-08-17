@@ -80,10 +80,12 @@ angular.module('starter.services', ['ngResource'])
     return {
       Photo: {
         post: $resource('http://10.0.3.2:8000/photo/'),
-        get: $resource('http://10.0.3.2:8000/photo/:id', {id:'@id'})
+        get: $resource('http://10.0.3.2:8000/photo/:id', {id:'@id'}),
+        get: $resource('http://10.0.3.2:8000/photo/byPhysical/:id', {id:'@id'})
       },
       Physical: {
         get: $resource('http://10.0.3.2:8000/physical/:location', {location:'@location'}),
+        getById: $resource('http://10.0.3.2:8000/physical/id/:id', {id:'@id'}),
         getAll: $resource('http://10.0.3.2:8000/physical/'),
         post: $resource('http://10.0.3.2:8000/physical/')
       },

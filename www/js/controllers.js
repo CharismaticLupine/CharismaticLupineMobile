@@ -52,17 +52,21 @@ angular.module('starter.controllers', [])
         var longitude = position.coords.longitude;
         var latitude = position.coords.latitude;
         $scope.getPhysical(longitude, latitude).then(function(result){
-          if(result.physicals.length > 0){
-            $scope.physicals = result.physicals;
-            $scope.stuff = {timmy: 'timmy'};
-            Physical.setPhysicals(result.physicals);
+          if(result.features.length >= 2){
+            Physical.setPhysicals(result.features);
             $state.go('choices');
           }
           else {
             var physical = new API.Physical.post({geo: [longitude, latitude]}); // req.body
-            physical.$save();
-            $scope.upload(imageURI);
-            $state.go('comments', {'physicalId': 1});
+            physical.$save()
+            .then(function(value) {
+              var physicalId = value.features[0].properties.id;
+              $scope.upload(imageURI, physicalId);
+              $state.go('comments', {'physicalId': physicalId});
+            })
+            .catch(function(err) {
+              // error handler;
+            })
           }
         }).catch(function(error){
           console.error(error)
@@ -81,7 +85,7 @@ angular.module('starter.controllers', [])
     options.fileKey = "photo";
     options.fileName = imageURI.substr(imageURI.lastIndexOf('/') + 1);
     options.mimeType = "image/jpeg";
-    options.params = {physical_id: physicalId};
+    options.params = {physical: physicalId};
     options.chunkedMode = false;
     options.headers = {
       'x-access-token': $window.localStorage.getItem('com.shortly')
@@ -140,11 +144,20 @@ angular.module('starter.controllers', [])
 
 
 })
-.controller("ChoicesController", function($scope, $state, Physical, $ionicHistory) {
+.controller("ChoicesController", function($scope, $state, API, Physical, $ionicHistory) {
 
   $ionicHistory.clearHistory();
   $scope.images = [];
-  $scope.physicals = Physical.data;
+  $scope.physicals = Physical.data.physicals;
+  for(var i = 0; i < $scope.physicals.length; i++) {
+    var physical = new API.Physical.getById({id: $scope.physicals[i].properties.id});
+    physical.$get()
+    .then(function(val) {
+      console.log(val);
+    }).catch(function(err){
+      console.log(err);
+    });
+  }
   $scope.back = function() {
     console.log('going back');
     $state.go('photos');
