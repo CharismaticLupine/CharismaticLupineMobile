@@ -150,10 +150,18 @@ angular.module('starter.controllers', [])
   $scope.images = [];
   $scope.physicals = Physical.data.physicals;
   for(var i = 0; i < $scope.physicals.length; i++) {
-    var physical = new API.Physical.getById({id: $scope.physicals[i].properties.id});
-    physical.$get()
+    var photo = new API.Photo.getbyPhysical({id: $scope.physicals[i].properties.id});
+    photo.$get()
     .then(function(val) {
       console.log(val);
+      var firstPhoto = val.photos[0];
+      var photoData = firstPhoto.photo;
+      var photoPhysical = firstPhoto.physicalId;
+      var arrayBufferView = new Uint8Array(photoData);
+      var blob = new Blob( [ arrayBufferView ], { type: "image/jpeg" } );
+      var urlCreator = window.URL || window.webkitURL;
+      var imageUrl = urlCreator.createObjectURL( blob );
+      $scope.images.push({imageUrl: imageUrl, physical: photoPhysical});
     }).catch(function(err){
       console.log(err);
     });

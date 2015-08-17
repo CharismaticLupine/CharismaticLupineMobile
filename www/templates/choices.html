@@ -2,8 +2,8 @@
     <ion-content>
         <button on-tap="back()" class="button">back</button>
         <ion-list>
-          <ion-item ng-repeat="physical in physicals">
-            Hello, {{physical}}!
+          <ion-item ng-repeat="image in images">
+            Hello, {{image}}!
           </ion-item>
         </ion-list>
         <div class="row" ng-repeat="image in images" ng-if="$index % 4 === 0">
