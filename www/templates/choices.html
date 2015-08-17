@@ -1,18 +1,13 @@
-<ion-view title="Choose your target" ng-init="">
+<ion-view title="Choose your target" ng-init="getPhoto()">
     <ion-content>
-        <div class="row" ng-repeat="image in images" ng-if="$index % 4 === 0">
-            <div class="col col-25" ng-if="$index < images.length">
-                <img ng-src="data:image/jpeg;base64,{{images[$index].image}}" width="100%" />
-            </div>
-            <div class="col col-25" ng-if="$index + 1 < images.length">
-                <img ng-src="data:image/jpeg;base64,{{images[$index + 1].image}}" width="100%" />
-            </div>
-            <div class="col col-25" ng-if="$index + 2 < images.length">
-                <img ng-src="data:image/jpeg;base64,{{images[$index + 2].image}}" width="100%" />
-            </div>
-            <div class="col col-25" ng-if="$index + 3 < images.length">
-                <img ng-src="data:image/jpeg;base64,{{images[$index + 3].image}}" width="100%" />
-            </div>
-        </div>
+        <button on-tap="back()" class="button">back</button>
+        <ion-list>
+          <ion-item ng-repeat="image in images" on-tap="upload(image.physical)">
+            <img ng-src="{{image.imageUrl}}" style="max-width: 100%">
+          </ion-item>
+          <ion-item on-tap="newPhysical()">
+            <img ng-src="{{lastImageURI}}" style="max-width: 100%">
+          </ion-item>
+        </ion-list>
     </ion-content>
 </ion-view>
