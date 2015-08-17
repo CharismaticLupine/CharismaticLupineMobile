@@ -64,6 +64,18 @@ angular.module('starter.services', ['ngResource'])
       }
     }
   }])
+  .factory('Physical',[function() {
+    var data = {
+      physicals: []
+    };
+    var setPhysicals = function(physicals) {
+      data.physicals = physicals;
+    }
+    return {
+      data: data,
+      setPhysicals: setPhysicals
+    };
+  }])
   .factory('API', ['$q', '$resource', function($q, $resource) {
     return {
       Photo: {

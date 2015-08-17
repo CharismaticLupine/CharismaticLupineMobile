@@ -32,7 +32,7 @@ angular.module('starter.controllers', [])
   }
 
 })
-.controller("PhotosController", ['$scope', '$state', '$ionicHistory', 'Camera', 'GPS', 'API', '$http', '$resource', '$window', function($scope, $state, $ionicHistory, Camera, GPS, API, $http, $resource, $window) {
+.controller("PhotosController", ['$scope', '$state', '$ionicHistory', 'Camera', 'GPS', 'Physical', 'API', '$http', '$resource', '$window', function($scope, $state, $ionicHistory, Camera, GPS, Physical, API, $http, $resource, $window) {
 
   $ionicHistory.clearHistory();
 
@@ -52,8 +52,11 @@ angular.module('starter.controllers', [])
         var longitude = position.coords.longitude;
         var latitude = position.coords.latitude;
         $scope.getPhysical(longitude, latitude).then(function(result){
-          if(result.features.length > 0){
-
+          if(result.physicals.length > 0){
+            $scope.physicals = result.physicals;
+            $scope.stuff = {timmy: 'timmy'};
+            Physical.setPhysicals(result.physicals);
+            $state.go('choices');
           }
           else {
             var physical = new API.Physical.post({geo: [longitude, latitude]}); // req.body
@@ -137,9 +140,14 @@ angular.module('starter.controllers', [])
 
 
 })
-.controller("ChoicesController", function($scope, $state, $ionicHistory) {
+.controller("ChoicesController", function($scope, $state, Physical, $ionicHistory) {
 
   $ionicHistory.clearHistory();
   $scope.images = [];
+  $scope.physicals = Physical.data;
+  $scope.back = function() {
+    console.log('going back');
+    $state.go('photos');
+  }
 
 });

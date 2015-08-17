@@ -1,5 +1,13 @@
 <ion-view title="Choose your target" ng-init="">
     <ion-content>
+        <button on-tap="back()" class="button">back</button>
+        <ion-list>
+          <ion-item ng-repeat="physical in physicals">
+            {{physicals}}
+            Hello, {{physical}}!
+            sfsdfs
+          </ion-item>
+        </ion-list>
         <div class="row" ng-repeat="image in images" ng-if="$index % 4 === 0">
             <div class="col col-25" ng-if="$index < images.length">
                 <img ng-src="data:image/jpeg;base64,{{images[$index].image}}" width="100%" />
