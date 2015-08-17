@@ -40,6 +40,7 @@ angular.module('starter.controllers', [])
   $ionicHistory.clearHistory();
 
   $scope.images = [];
+  $scope.upload = Camera.upload;
 
   $scope.takePhoto = function() {
     var options = {
@@ -55,8 +56,9 @@ angular.module('starter.controllers', [])
         var longitude = position.coords.longitude;
         var latitude = position.coords.latitude;
         $scope.getPhysical(longitude, latitude).then(function(result){
-          if(result.features.length >= 2){
+          if(result.features.length > 0){
             Physical.setPhysicals(result.features);
+            Physical.setPhotoURI(imageURI);
             $state.go('choices');
           }
           else {
@@ -81,29 +83,6 @@ angular.module('starter.controllers', [])
     });
   };
 
-  $scope.upload = function(imageURI, physicalId) {
-    physicalId = physicalId || 1;
-    var ft = new FileTransfer();
-    var options = new FileUploadOptions();
-    options.fileKey = "photo";
-    options.fileName = imageURI.substr(imageURI.lastIndexOf('/') + 1);
-    options.mimeType = "image/jpeg";
-    options.params = {physical: physicalId};
-    options.chunkedMode = false;
-    options.headers = {
-      'x-access-token': $window.localStorage.getItem('com.shortly')
-    };
-    ft.upload(imageURI, "http://10.0.3.2:8000/photo", function(r) {
-      console.log("Code = " + r.responseCode);
-      console.log("Response = " + r.response);
-      console.log("Sent = " + r.bytesSent);
-    }, function(error) {
-      alert("An error has occurred: Code = " + error.code);
-      console.log("upload error source " + error.source);
-      console.log("upload error target " + error.target);
-    }, options);
-  };
-
   $scope.postPhysical = function(longitude, latitude) {
     var physical = new API.Physical.post({geo: [longitude, latitude]}); // req.body
     return physical.$save();
@@ -120,14 +99,8 @@ angular.module('starter.controllers', [])
   $scope.post = function(text){
     var comment = new API.Comment.post({text: text, physical: $stateParams.physicalId}); // req.body
     comment.$save();
-    $state.go('commentsList', {'physicalId': 1});
+    $state.go('commentsList', {'physicalId': $stateParams.physicalId});
   };
-
-  $scope.clear = function() {
-
-  };
-
-
 })
 .controller("CommentsListController", function($scope, $state, $stateParams, $ionicHistory, API) {
   $ionicHistory.clearHistory();
@@ -141,38 +114,40 @@ angular.module('starter.controllers', [])
   $scope.newPhoto = function(){
     $state.go('photos');
   };
-
-  $scope.getComments();
-  console.log($scope.comments);
-
-
 })
-.controller("ChoicesController", function($scope, $state, API, Physical, $ionicHistory) {
+.controller("ChoicesController", function($scope, $state, API, Physical, Camera, $ionicHistory) {
 
   $ionicHistory.clearHistory();
-  $scope.images = [];
-  $scope.physicals = Physical.data.physicals;
-  for(var i = 0; i < $scope.physicals.length; i++) {
-    var photo = new API.Photo.getbyPhysical({id: $scope.physicals[i].properties.id});
-    photo.$get()
-    .then(function(val) {
-      console.log(val);
-      var firstPhoto = val.photos[0];
-      // var photoData = firstPhoto.photo;
-      var photoData = firstPhoto.data;
-      var photoPhysicalID = 1;
-      var arrayBufferView = new Uint8Array(photoData);
-      var blob = new Blob( [ arrayBufferView ], { type: "image/jpeg" } );
-      var urlCreator = window.URL || window.webkitURL;
-      var imageUrl = urlCreator.createObjectURL( blob );
-      $scope.images.push({imageUrl: imageUrl, physical: photoPhysicalID});
-    }).catch(function(err){
-      console.log(err);
-    });
-  }
+  $scope.getPhoto = function() {
+    $scope.images = [];
+    $scope.physicals = Physical.data.physicals;
+    for(var i = 0; i < $scope.physicals.length; i++) {
+      var photo = new API.Photo.getbyPhysical({id: $scope.physicals[i].properties.id});
+      photo.$get()
+      .then(function(val) {
+        console.log(val);
+        var firstPhoto = val.photos[0];
+        // var photoData = firstPhoto.photo;
+        var photoData = firstPhoto.data;
+        var photoPhysicalID = 1;
+        var arrayBufferView = new Uint8Array(photoData);
+        var blob = new Blob( [ arrayBufferView ], { type: "image/jpeg" } );
+        var urlCreator = window.URL || window.webkitURL;
+        var imageUrl = urlCreator.createObjectURL( blob );
+        $scope.images.push({imageUrl: imageUrl, physical: photoPhysicalID});
+      }).catch(function(err){
+        console.log(err);
+      });
+    }
+  };
+
   $scope.back = function() {
     console.log('going back');
     $state.go('photos');
-  }
+  };
 
+  $scope.upload = function(physicalId) {
+    Camera.upload(Physical.data.photoURI, physicalId);
+    $state.go('comments', {'physicalId': physicalId});
+  };
 });

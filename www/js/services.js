@@ -47,12 +47,36 @@ angular.module('starter.services', ['ngResource'])
       signout: signout
     };
   })
-  .factory('Camera', ['$cordovaCamera', function($cordovaCamera) {
-
-    return {
-      getPicture: function(options) {
+  .factory('Camera', ['$cordovaCamera', '$window', function($cordovaCamera, $window) {
+    var getPicture = function(options) {
         return $cordovaCamera.getPicture(options);
-      }
+      };
+
+    var upload = function(imageURI, physicalId) {
+      physicalId = physicalId || 1;
+      var ft = new FileTransfer();
+      var options = new FileUploadOptions();
+      options.fileKey = "photo";
+      options.fileName = imageURI.substr(imageURI.lastIndexOf('/') + 1);
+      options.mimeType = "image/jpeg";
+      options.params = {physical: physicalId};
+      options.chunkedMode = false;
+      options.headers = {
+        'x-access-token': $window.localStorage.getItem('com.shortly')
+      };
+      ft.upload(imageURI, "http://10.0.3.2:8000/photo", function(r) {
+        console.log("Code = " + r.responseCode);
+        console.log("Response = " + r.response);
+        console.log("Sent = " + r.bytesSent);
+      }, function(error) {
+        alert("An error has occurred: Code = " + error.code);
+        console.log("upload error source " + error.source);
+        console.log("upload error target " + error.target);
+      }, options);
+    };
+    return {
+      getPicture: getPicture,
+      upload: upload
     };
   }])
   .factory('GPS', ['$cordovaGeolocation', function($cordovaGeolocation) {
@@ -66,14 +90,19 @@ angular.module('starter.services', ['ngResource'])
   }])
   .factory('Physical',[function() {
     var data = {
-      physicals: []
+      physicals: [],
+      photoURI: ""
     };
     var setPhysicals = function(physicals) {
       data.physicals = physicals;
-    }
+    };
+    var setPhotoURI = function(photoURI) {
+      data.photoURI = photoURI;
+    };
     return {
       data: data,
-      setPhysicals: setPhysicals
+      setPhysicals: setPhysicals,
+      setPhotoURI: setPhotoURI
     };
   }])
   .factory('API', ['$q', '$resource', function($q, $resource) {
